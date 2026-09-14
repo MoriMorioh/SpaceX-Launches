@@ -1,13 +1,13 @@
-export interface LaunchLinks {
+interface LaunchLinks {
   mission_patch?: string | null;
   mission_patch_small?: string | null;
 }
 
-export interface LaunchRocket {
+interface LaunchRocket {
   rocket_name: string;
 }
 
-export interface Launch {
+interface Launch {
   flight_number: number;
   mission_name: string;
   rocket?: LaunchRocket;

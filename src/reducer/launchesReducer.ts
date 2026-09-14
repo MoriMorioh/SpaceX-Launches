@@ -1,5 +1,3 @@
-import type { Launch } from '../types/launch';
-
 export interface State {
   launches: Launch[];
   loading: boolean;

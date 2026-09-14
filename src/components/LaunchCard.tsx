@@ -1,6 +1,5 @@
 import React from 'react';
 import { Card, Image, Text, Button, Center, Stack } from '@mantine/core';
-import type { Launch } from '../types/launch';
 
 interface LaunchCardProps {
   launch: Launch;
