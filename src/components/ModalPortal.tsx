@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import ReactDOM from 'react-dom';
 import type { Launch } from '../types/launch';
 
@@ -7,10 +7,18 @@ interface ModalPortalProps {
   onClose: () => void;
 }
 
-export const ModalPortal: React.FC<ModalPortalProps> = ({
-  launch,
-  onClose,
-}) => {
+export const ModalPortal: React.FC<ModalPortalProps> = ({ launch, onClose }) => {
+  const modalRoot = document.getElementById('modal-root');
+  const rawUrl = launch.links?.mission_patch || null;
+
+  const [prevRawUrl, setPrevRawUrl] = useState<string | null>(rawUrl);
+  const [hasError, setHasError] = useState(false);
+
+  if (prevRawUrl !== rawUrl) {
+    setPrevRawUrl(rawUrl);
+    setHasError(false);
+  }
+
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape') onClose();
@@ -18,6 +26,10 @@ export const ModalPortal: React.FC<ModalPortalProps> = ({
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [onClose]);
+
+  if (!modalRoot) return null;
+
+  const showImage = rawUrl && !hasError;
 
   return ReactDOM.createPortal(
     <div
@@ -66,16 +78,15 @@ export const ModalPortal: React.FC<ModalPortalProps> = ({
           ✕
         </button>
 
-        <h3 style={{ marginTop: 0, paddingRight: '20px' }}>
-          {launch.mission_name}
-        </h3>
+        <h3 style={{ marginTop: 0, paddingRight: '20px' }}>{launch.mission_name}</h3>
 
-        {launch.links?.mission_patch && (
+        {showImage && (
           <div style={{ textAlign: 'center', margin: '16px 0' }}>
             <img
-              src={launch.links.mission_patch}
+              src={rawUrl}
               alt={launch.mission_name}
               style={{ width: '150px', height: '150px', objectFit: 'contain' }}
+              onError={() => setHasError(true)}
             />
           </div>
         )}
@@ -89,16 +100,16 @@ export const ModalPortal: React.FC<ModalPortalProps> = ({
           <p>
             <strong>Rocket name:</strong>
             <br />
-            {launch.rocket?.rocket_name || 'N/A'}
+            {launch.rocket?.rocket_name}
           </p>
           <p>
             <strong>Details:</strong>
             <br />
-            {launch.details || 'No details available.'}
+            {launch.details}
           </p>
         </div>
       </div>
     </div>,
-    document.body
+    modalRoot
   );
 };
