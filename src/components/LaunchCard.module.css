@@ -1,0 +1,13 @@
+.card {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.imageCenter {
+  height: 120px;
+}
+
+.stack {
+  flex-grow: 1;
+}

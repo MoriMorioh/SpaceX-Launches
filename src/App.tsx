@@ -1,34 +1,36 @@
 import { useReducer, useEffect } from 'react';
-import { Container, Title, SimpleGrid, Loader, Alert, Center } from '@mantine/core';
+import { Container, Title, SimpleGrid, Loader, Alert, Center, Box } from '@mantine/core';
 import { launchesReducer, initialState } from './reducer/launchesReducer';
 import { LaunchCard } from './components/LaunchCard';
 import { ModalPortal } from './components/ModalPortal';
+import classes from './App.module.css';
 
 function extractLaunchesArray(data: unknown): Launch[] | null {
-  if(Array.isArray(data)) {
+  if (Array.isArray(data)) {
     return data;
   }
 
-  if(data && typeof data === 'object') {
+  if (data && typeof data === 'object') {
     const obj = data as Record<string, unknown>;
     if (Array.isArray(obj.docs)) return obj.docs as Launch[];
     if (Array.isArray(obj.data)) return obj.data as Launch[];
     if (Array.isArray(obj.launches)) return obj.launches as Launch[];
   }
+
   return null;
 }
 
-async function fetchLaunches():Promise<Launch[]> {
+async function fetchLaunches(): Promise<Launch[]> {
   const response = await fetch('https://kata-spacex.onrender.com/api/launches');
-
-  if(!response.ok) {
+  
+  if (!response.ok) {
     throw new Error(`Server error: ${response.status}`);
   }
 
   const data = await response.json();
   const launches = extractLaunchesArray(data);
 
-  if(!launches) {
+  if (!launches) {
     throw new Error('Invalid data format');
   }
 
@@ -40,22 +42,22 @@ export function App() {
 
   useEffect(() => {
     dispatch({ type: 'FETCH_START' });
-    
+
     fetchLaunches()
-      .then((launches) => dispatch({ type:  'FETCH_SUCCESS', payload: launches }))
+      .then((launches) => dispatch({ type: 'FETCH_SUCCESS', payload: launches }))
       .catch((err: Error) => dispatch({ type: 'FETCH_ERROR', payload: err.message }));
   }, []);
 
   const hasLaunches = state.launches.length > 0;
 
   return (
-    <Container size="lg" py="xl">
-      <Title order={1} ta="center" mb="xl">
+    <Container size="lg" className={classes.container}>
+      <Title order={1} ta="center" className={classes.title}>
         SpaceX Launches 2020
       </Title>
 
       {state.loading && (
-        <Center py="xl">
+        <Center className={classes.loaderWrapper}>
           <Loader size="lg" />
         </Center>
       )}
@@ -79,9 +81,9 @@ export function App() {
               ))}
             </SimpleGrid>
           ) : (
-            <p style={{ textAlign: 'center', color: '#868e96', margin: 0 }}>
+            <Box ta="center" className={classes.emptyText}>
               No launches found.
-            </p>
+            </Box>
           )}
         </>
       )}

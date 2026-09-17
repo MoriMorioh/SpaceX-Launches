@@ -1,5 +1,6 @@
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import ReactDOM from 'react-dom';
+import classes from './ModalPortal.module.css';
 
 interface ModalPortalProps {
   launch: Launch;
@@ -32,65 +33,36 @@ export const ModalPortal: React.FC<ModalPortalProps> = ({ launch, onClose }) => 
 
   return ReactDOM.createPortal(
     <div
+      className={classes.overlay}
       onClick={onClose}
       aria-label="modal-overlay"
-      style={{
-        position: 'fixed',
-        top: 0,
-        left: 0,
-        right: 0,
-        bottom: 0,
-        backgroundColor: 'rgba(0, 0, 0, 0.6)',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        zIndex: 1000,
-      }}
     >
       <div
+        className={classes.content}
         onClick={(e) => e.stopPropagation()}
-        style={{
-          backgroundColor: '#fff',
-          borderRadius: '8px',
-          padding: '24px',
-          maxWidth: '500px',
-          width: '90%',
-          maxHeight: '80vh',
-          overflowY: 'auto',
-          position: 'relative',
-          boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
-        }}
       >
         <button
+          className={classes.closeButton}
           onClick={onClose}
           aria-label="Close modal"
-          style={{
-            position: 'absolute',
-            top: '12px',
-            right: '12px',
-            border: 'none',
-            background: 'none',
-            fontSize: '18px',
-            cursor: 'pointer',
-          }}
         >
           ✕
         </button>
 
-        <h3 style={{ marginTop: 0, paddingRight: '20px' }}>{launch.mission_name}</h3>
+        <h3 className={classes.title}>{launch.mission_name}</h3>
 
         {showImage && (
-          <div style={{ textAlign: 'center', margin: '16px 0' }}>
+          <div className={classes.imageWrapper}>
             <img
+              className={classes.image}
               src={rawUrl}
               alt={launch.mission_name}
-              style={{ width: '150px', height: '150px', objectFit: 'contain' }}
               onError={() => setHasError(true)}
             />
           </div>
         )}
 
-        <div style={{ fontSize: '14px', lineHeight: '1.5' }}>
+        <div className={classes.details}>
           <p>
             <strong>Mission name:</strong>
             <br />
@@ -99,12 +71,12 @@ export const ModalPortal: React.FC<ModalPortalProps> = ({ launch, onClose }) => 
           <p>
             <strong>Rocket name:</strong>
             <br />
-            {launch.rocket?.rocket_name}
+            {launch.rocket?.rocket_name || 'N/A'}
           </p>
           <p>
             <strong>Details:</strong>
             <br />
-            {launch.details}
+            {launch.details || 'No details available.'}
           </p>
         </div>
       </div>

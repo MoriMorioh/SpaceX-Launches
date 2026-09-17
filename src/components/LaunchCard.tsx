@@ -1,4 +1,6 @@
+import React, { useState } from 'react';
 import { Card, Image, Text, Button, Center, Stack } from '@mantine/core';
+import classes from './LaunchCard.module.css';
 
 interface LaunchCardProps {
   launch: Launch;
@@ -6,31 +8,46 @@ interface LaunchCardProps {
 }
 
 export const LaunchCard: React.FC<LaunchCardProps> = ({ launch, onSelect }) => {
+  const rawUrl = launch.links?.mission_patch_small || launch.links?.mission_patch || null;
+
+  const [prevRawUrl, setPrevRawUrl] = useState<string | null>(rawUrl);
+  const [hasError, setHasError] = useState(false);
+
+  if (prevRawUrl !== rawUrl) {
+    setPrevRawUrl(rawUrl);
+    setHasError(false);
+  }
+
+  const showImage = rawUrl && !hasError;
+
   return (
     <Card
+      className={classes.card}
       shadow="sm"
       padding="md"
       radius="md"
       withBorder
-      style={{ display: 'flex', flexDirection: 'column', height: '100%' }}
     >
       <Card.Section pt="md">
-        <Center style={{ height: '120px' }}>
-          {launch.links?.mission_patch_small ? (
+        <Center className={classes.imageCenter}>
+          {showImage ? (
             <Image
-              src={launch.links.mission_patch_small}
+              src={rawUrl}
               alt={launch.mission_name}
               h={100}
               w="auto"
               fit="contain"
+              onError={() => setHasError(true)}
             />
           ) : (
-            <Text c="dimmed">No Image</Text>
+            <Text c="dimmed" size="xs">
+              No Image
+            </Text>
           )}
         </Center>
       </Card.Section>
 
-      <Stack justify="space-between" mt="md" style={{ flexGrow: 1 }}>
+      <Stack className={classes.stack} justify="space-between" mt="md">
         <Stack gap={4} align="center">
           <Text fw={700} ta="center" lineClamp={1}>
             {launch.mission_name}
@@ -40,12 +57,7 @@ export const LaunchCard: React.FC<LaunchCardProps> = ({ launch, onSelect }) => {
           </Text>
         </Stack>
 
-        <Button
-          fullWidth
-          color="blue"
-          radius="md"
-          onClick={() => onSelect(launch)}
-        >
+        <Button fullWidth color="blue" radius="md" onClick={() => onSelect(launch)}>
           See more
         </Button>
       </Stack>

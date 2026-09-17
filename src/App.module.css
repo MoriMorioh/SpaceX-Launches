@@ -1,0 +1,17 @@
+.container {
+  padding-top: 32px;
+  padding-bottom: 32px;
+}
+
+.title {
+  margin-bottom: 32px;
+}
+
+.loaderWrapper {
+  padding-top: 32px;
+  padding-bottom: 32px;
+}
+
+.emptyText {
+  color: #868e96;
+}
